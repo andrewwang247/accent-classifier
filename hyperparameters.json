@@ -1,3 +1,10 @@
 {
-  "test_set_percent": 20
+  "batch_size": 32,
+  "epochs": 40,
+  "frame_len": 20000,
+  "frame_step": 1500,
+  "learning_rate": 0.001,
+  "sampling_rate": 8000,
+  "shuffle_buffer": 2048,
+  "test_split": 0.1
 }
