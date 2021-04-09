@@ -10,7 +10,7 @@ import numpy as np  # type: ignore
 from librosa.util import normalize  # type: ignore
 from librosa.feature import melspectrogram  # type: ignore
 import tensorflow as tf  # type: ignore
-# pylint: disable=redefined-outer-scope
+# pylint: disable=redefined-outer-name
 
 DATA_DIR = 'recordings'
 ACCENTS = sorted(acc.name for acc in scandir(DATA_DIR))
