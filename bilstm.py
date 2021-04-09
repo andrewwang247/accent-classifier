@@ -18,6 +18,8 @@ def _get_bilstm_layers(in_shape: Tuple[int, ...],
             layers.LSTM(20, return_sequences=True)),
         layers.Bidirectional(
             layers.LSTM(20, return_sequences=True)),
+        layers.Bidirectional(
+            layers.LSTM(20, return_sequences=True)),
         layers.Bidirectional(layers.LSTM(20)),
         layers.Dense(num_labels, activation='softmax')]
 
