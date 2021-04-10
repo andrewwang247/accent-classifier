@@ -35,15 +35,18 @@ def _transform_files(filenames: tf.data.Dataset,
     """Transform filenames of the same label to labelled dataset."""
     audio = filenames.map(tf.io.read_file) \
         .map(tf.audio.decode_wav) \
-        .map(lambda tup: tup[0]) \
-        .map(lambda amp: tf.reshape(amp, [-1])) \
-        .map(lambda sig: sig / tf.reduce_max(tf.abs(sig))) \
+        .map(lambda amp: tf.reshape(amp[0], [-1])) \
         .map(lambda sig: tf.signal.frame(sig, hyp['frame_len'],
                                          hyp['frame_step'])) \
         .interleave(tf.data.Dataset.from_tensor_slices,
                     cycle_length=tf.data.AUTOTUNE,
                     num_parallel_calls=tf.data.AUTOTUNE) \
-        .filter(lambda frame: tf.norm(frame) > hyp['norm_threshold'])
+        .map(lambda sig: tfio.experimental.audio.
+             spectrogram(sig, hyp['num_fft'],
+                         hyp['spec_window'], hyp['spec_stride'])) \
+        .map(lambda spec: tfio.experimental.audio.
+             melscale(spec, hyp['sampling_rate'], hyp['num_mels'],
+                      hyp['freq_min'], hyp['freq_max']))
     const = tf.data.Dataset.from_tensors([label]).repeat()
     return tf.data.Dataset.zip((audio, const))
 
@@ -59,7 +62,4 @@ def load_accents(hyp: Dict[str, Union[float, int]]) \
         train = train.concatenate(new_train)
         val = val.concatenate(new_val)
         test = test.concatenate(new_test)
-    buff = hyp['shuffle_buffer']
-    return train.shuffle(buff), \
-        val.shuffle(buff), \
-        test.shuffle(buff)
+    return train, val, test
