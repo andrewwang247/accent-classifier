@@ -6,6 +6,7 @@ Copyright 2021. Siwei Wang.
 from typing import Dict, Tuple, Union
 from os import path, scandir
 import tensorflow as tf  # type: ignore
+import tensorflow_io as tfio  # type: ignore
 # pylint: disable=redefined-outer-name
 
 DATA_DIR = 'recordings'
