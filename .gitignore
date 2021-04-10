@@ -1,6 +1,7 @@
 # Model
 saved/
 *.png
+*.hdf5
 
 # Python
 *.pyc

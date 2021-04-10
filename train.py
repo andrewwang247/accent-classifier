@@ -33,29 +33,27 @@ def input_shape(dataset: tf.data.Dataset) -> Tuple[int, ...]:
 def train():
     """Train models on data."""
     hyp = get_hyp()
-    batch_size = hyp['batch_size']
     train, val, test = [ds.shuffle(hyp['shuffle_buffer']).repeat()
-                        .batch(batch_size, drop_remainder=True)
+                        .batch(hyp['batch_size'], drop_remainder=True)
                         .prefetch(1)
                         for ds in load_accents(hyp)]
 
     # This shape depends on hyperparameters. Adjust if necessary!
-    model = get_bilstm(len(ACCENTS), hyp)
+    model = get_bilstm(len(ACCENTS))
     model.build(input_shape(val))
     model.compile(optimizer=optimizers.Nadam(hyp['learning_rate']),
                   loss='sparse_categorical_crossentropy',
                   metrics=['sparse_categorical_accuracy'])
     model.summary()
 
-    checkpoint = callbacks.ModelCheckpoint('saved/bilstm_{epoch:02d}.h5')
-    hist = model.fit(train, batch_size=batch_size,
-                     steps_per_epoch=hyp['train_steps'],
+    checkpoint = callbacks.ModelCheckpoint('bilstm.hdf5',
+                                           monitor='val_loss',
+                                           save_best_only=True)
+    hist = model.fit(train, steps_per_epoch=hyp['train_steps'],
                      epochs=hyp['epochs'], callbacks=[checkpoint],
-                     validation_data=val, validation_batch_size=batch_size,
-                     validation_steps=hyp['val_steps'],
+                     validation_data=val, validation_steps=hyp['val_steps'],
                      workers=hyp['cpu_cores'], use_multiprocessing=True)
-    test_loss, test_acc = model.evaluate(test, batch_size=batch_size,
-                                         steps=hyp['test_steps'])
+    test_loss, test_acc = model.evaluate(test, steps=hyp['test_steps'])
     dpi = hyp['plot_dpi']
     assert hist is not None
     assert isinstance(dpi, int)
