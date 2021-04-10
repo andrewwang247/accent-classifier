@@ -12,7 +12,7 @@ DATA_DIR = 'recordings'
 ACCENTS = sorted(acc.name for acc in scandir(DATA_DIR))
 
 
-def file_split(accent: str, hyp: Dict[str, Union[float, int]]) \
+def _file_split(accent: str, hyp: Dict[str, Union[float, int]]) \
         -> Tuple[tf.data.Dataset, tf.data.Dataset, tf.data.Dataset]:
     """Load filenames into datasets and split into train, val, test."""
     acc_dir = path.join(DATA_DIR, accent)
@@ -28,9 +28,9 @@ def file_split(accent: str, hyp: Dict[str, Union[float, int]]) \
     return train, val, test
 
 
-def transform_files(filenames: tf.data.Dataset,
-                    label: int,
-                    hyp: Dict[str, Union[float, int]]) -> tf.data.Dataset:
+def _transform_files(filenames: tf.data.Dataset,
+                     label: int,
+                     hyp: Dict[str, Union[float, int]]) -> tf.data.Dataset:
     """Transform filenames of the same label to labelled dataset."""
     audio = filenames.map(tf.io.read_file) \
         .map(tf.audio.decode_wav) \
@@ -50,11 +50,11 @@ def transform_files(filenames: tf.data.Dataset,
 def load_accents(hyp: Dict[str, Union[float, int]]) \
         -> Tuple[tf.data.Dataset, tf.data.Dataset, tf.data.Dataset]:
     """Load all accents into datasets."""
-    train, val, test = [transform_files(ds, 0, hyp)
-                        for ds in file_split(ACCENTS[0], hyp)]
+    train, val, test = [_transform_files(ds, 0, hyp)
+                        for ds in _file_split(ACCENTS[0], hyp)]
     for lbl, accent in enumerate(ACCENTS[1:], start=1):
-        new_train, new_val, new_test = [transform_files(ds, lbl, hyp)
-                                        for ds in file_split(accent, hyp)]
+        new_train, new_val, new_test = [_transform_files(ds, lbl, hyp)
+                                        for ds in _file_split(accent, hyp)]
         train = train.concatenate(new_train)
         val = val.concatenate(new_val)
         test = test.concatenate(new_test)
