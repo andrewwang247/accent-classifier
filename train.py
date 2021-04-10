@@ -16,18 +16,26 @@ HYP_FILE = 'hyperparameters.json'
 APPROX_TOTAL_SIGS = 240_000_000
 
 
+def get_hyp() -> Dict[str, Union[float, int]]:
+    """Retrieve hyperparameter dictionary."""
+    with open(HYP_FILE) as fin:
+        hyp = load(fin)
+    return hyp
+
+
 def epoch_steps(source: str, hyp: Dict[str, Union[float, int]]) -> int:
     """Approximate epoch steps to cover the dataset."""
     assert source in ('train', 'val', 'test')
     frac = 1 - hyp['val_split'] - hyp['test_split'] \
         if source == 'train' else hyp[f'{source}_split']
     windows = frac * APPROX_TOTAL_SIGS / hyp['frame_step']
-    return round(windows / hyp['batch_size'])
+    return round(hyp['step_scale'] * windows / hyp['batch_size'])
 
 
-def plot_history(history: Dict[str, List[float]], fpath: str):
+def plot_history(history: Dict[str, List[float]],
+                 fpath: str, plot_dpi: int):
     """Save a matplotlib plot of training history."""
-    plt.figure(dpi=1200)
+    plt.figure(dpi=plot_dpi)
     for points in history.values():
         plt.plot(points)
     plt.legend(history.keys())
@@ -38,8 +46,7 @@ def plot_history(history: Dict[str, List[float]], fpath: str):
 
 def train():
     """Train models on data."""
-    with open(HYP_FILE) as fin:
-        hyp: Dict[str, Union[float, int]] = load(fin)
+    hyp = get_hyp()
     batch_size = hyp['batch_size']
     train, val, test = [ds.repeat()
                         .batch(batch_size, drop_remainder=True)
@@ -63,7 +70,7 @@ def train():
                      workers=12, use_multiprocessing=True)
     result = model.evaluate(test, batch_size=batch_size,
                             steps=epoch_steps('test', hyp))
-    plot_history(hist.history, 'train_plot.png')
+    plot_history(hist.history, 'train_plot.png', hyp['plot_dpi'])
     print(f'Result: {result}')
 
 
