@@ -21,9 +21,9 @@ def get_bilstm(in_shape: Tuple[int, ...], num_labels: int) -> Model:
     """Define and retrieve BiLSTM model."""
     model = Sequential(
         layers=[layers.Reshape((-1, 1), input_shape=in_shape),
-                _get_bilstm_layer(10, True),
+                _get_bilstm_layer(5, True),
                 layers.Dropout(0.25),
-                _get_bilstm_layer(10, False),
+                _get_bilstm_layer(5, False),
                 layers.Dropout(0.25),
                 layers.Dense(num_labels, activation='softmax')],
         name='BiLSTM')
