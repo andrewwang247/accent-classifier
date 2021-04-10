@@ -1,13 +1,13 @@
 {
   "batch_size": 32,
-  "epochs": 15,
-  "frame_len": 5000,
-  "frame_step": 5000,
-  "learning_rate": 0.001,
+  "epochs": 30,
+  "frame_len": 4000,
+  "frame_step": 4000,
+  "learning_rate": 0.01,
   "norm_threshold": 2.0,
   "plot_dpi": 1200,
   "sampling_rate": 8000,
-  "step_scale": 0.2,
+  "step_scale": 0.15,
   "shuffle_buffer": 1024,
   "test_split": 0.1,
   "val_split": 0.1
