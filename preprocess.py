@@ -36,11 +36,13 @@ def transform_files(filenames: tf.data.Dataset,
         .map(tf.audio.decode_wav) \
         .map(lambda tup: tup[0]) \
         .map(lambda amp: tf.reshape(amp, [-1])) \
+        .map(lambda sig: sig / tf.reduce_max(tf.abs(sig))) \
         .map(lambda sig: tf.signal.frame(sig, hyp['frame_len'],
                                          hyp['frame_step'])) \
         .interleave(tf.data.Dataset.from_tensor_slices,
                     cycle_length=tf.data.AUTOTUNE,
-                    num_parallel_calls=tf.data.AUTOTUNE)
+                    num_parallel_calls=tf.data.AUTOTUNE) \
+        .filter(lambda frame: tf.norm(frame) > hyp['norm_threshold'])
     const = tf.data.Dataset.from_tensors([label]).repeat()
     return tf.data.Dataset.zip((audio, const))
 

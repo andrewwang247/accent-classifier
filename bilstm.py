@@ -13,14 +13,10 @@ def _get_bilstm_layers(in_shape: Tuple[int, ...],
     return [
         layers.Reshape((-1, 1), input_shape=in_shape),
         layers.Bidirectional(
-            layers.LSTM(20, return_sequences=True)),
+            layers.LSTM(15, return_sequences=True)),
         layers.Bidirectional(
-            layers.LSTM(20, return_sequences=True)),
-        layers.Bidirectional(
-            layers.LSTM(20, return_sequences=True)),
-        layers.Bidirectional(
-            layers.LSTM(20, return_sequences=True)),
-        layers.Bidirectional(layers.LSTM(20)),
+            layers.LSTM(15, return_sequences=True)),
+        layers.Bidirectional(layers.LSTM(15)),
         layers.Dense(num_labels, activation='softmax')]
 
 
