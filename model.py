@@ -20,7 +20,8 @@ def _lstm_layer(units: int, ret_seq: bool) -> LSTM:
 def get_bilstm(num_labels: int) -> Model:
     """Define and retrieve BiLSTM model."""
     return Sequential(
-        layers=[Bidirectional(_lstm_layer(32, True)),
-                Bidirectional(_lstm_layer(32, False)),
+        layers=[Bidirectional(_lstm_layer(36, True)),
+                Bidirectional(_lstm_layer(36, True)),
+                Bidirectional(_lstm_layer(36, False)),
                 Dense(num_labels, activation='softmax')],
         name='BiLSTM')
