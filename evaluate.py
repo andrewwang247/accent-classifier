@@ -9,13 +9,12 @@ from matplotlib import pyplot as plt  # type: ignore
 
 def plot_history(history: Dict[str, List[int]], dpi: int):
     """Plot loss and accuracy over training."""
-    for metric in ('loss', 'sparse_categorical_accuracy'):
-        short_name = metric.split('_')[-1]
+    for metric in ('loss', 'accuracy'):
         plt.figure(dpi=dpi)
         plt.plot(history[metric])
         plt.plot(history[f'val_{metric}'])
-        plt.legend([short_name, f'val_{short_name}'])
+        plt.legend([metric, f'val_{metric}'])
         plt.xlabel('Epoch')
-        plt.ylabel('Metric Value')
-        plt.title(f'{short_name.capitalize()} over Training')
-        plt.savefig(f'{short_name}.png')
+        plt.ylabel(f'{metric.capitalize()} Value')
+        plt.title(f'{metric.capitalize()} over Training')
+        plt.savefig(f'{metric}.png')

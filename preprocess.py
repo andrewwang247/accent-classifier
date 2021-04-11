@@ -4,13 +4,11 @@ Load and preprocess recordings.
 Copyright 2021. Siwei Wang.
 """
 from typing import Dict, Tuple, Union
-from os import path, scandir
+from os import path
 import tensorflow as tf  # type: ignore
 import tensorflow_io as tfio  # type: ignore
+from constants import DATA_DIR, ACCENTS
 # pylint: disable=redefined-outer-name
-
-DATA_DIR = 'recordings'
-ACCENTS = sorted(acc.name for acc in scandir(DATA_DIR))
 
 
 def _file_split(accent: str, hyp: Dict[str, Union[float, int]]) \
@@ -29,6 +27,14 @@ def _file_split(accent: str, hyp: Dict[str, Union[float, int]]) \
     return train, val, test
 
 
+def _standardize_tensor(tens: tf.Tensor) -> tf.Tensor:
+    """Rescale tensor to 0 mean and 1 std."""
+    mean = tf.math.reduce_mean(tens)
+    std = tf.math.reduce_std(tens)
+    denom = std if std != 0.0 else tf.constant(0.001)
+    return (tens - mean) / denom
+
+
 def _transform_files(filenames: tf.data.Dataset,
                      label: int,
                      hyp: Dict[str, Union[float, int]]) -> tf.data.Dataset:
@@ -44,9 +50,10 @@ def _transform_files(filenames: tf.data.Dataset,
         .map(lambda sig: tfio.experimental.audio.
              spectrogram(sig, hyp['num_fft'],
                          hyp['spec_window'], hyp['spec_stride'])) \
-        .map(lambda spec: tfio.experimental.audio.
-             melscale(spec, hyp['sampling_rate'], hyp['num_mels'],
-                      hyp['freq_min'], hyp['freq_max']))
+        .map(lambda spec: tfio.experimental.audio
+             .melscale(spec, hyp['sampling_rate'], hyp['num_mels'],
+                       hyp['freq_min'], hyp['freq_max'])) \
+        .map(_standardize_tensor)
     const = tf.data.Dataset.from_tensors([label]).repeat()
     return tf.data.Dataset.zip((audio, const))
 

@@ -1,12 +1,12 @@
 {
   "batch_size": 32,
   "cpu_cores": 12,
-  "epochs": 25,
-  "frame_len": 15000,
-  "frame_step": 5000,
+  "epochs": 30,
+  "frame_len": 6000,
+  "frame_step": 3000,
   "freq_max": 4000,
   "freq_min": 0,
-  "learning_rate": 0.001,
+  "learning_rate": 0.0001,
   "num_fft": 512,
   "num_mels": 128,
   "plot_dpi": 1200,
@@ -15,8 +15,8 @@
   "spec_window": 512,
   "spec_stride": 256,
   "test_split": 0.1,
-  "test_steps": 150,
-  "train_steps": 1200,
+  "test_steps": 250,
+  "train_steps": 2000,
   "val_split": 0.1,
-  "val_steps": 150
+  "val_steps": 250
 }
