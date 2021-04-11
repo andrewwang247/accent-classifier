@@ -1,7 +1,5 @@
-# Model
-saved/
+# Training Artifacts
 *.png
-*.hdf5
 
 # Python
 *.pyc

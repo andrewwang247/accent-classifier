@@ -7,7 +7,7 @@ from typing import Dict, Tuple, Union
 from os import path
 import tensorflow as tf  # type: ignore
 import tensorflow_io as tfio  # type: ignore
-from constants import DATA_DIR, ACCENTS
+from util import DATA_DIR, ACCENTS
 # pylint: disable=redefined-outer-name
 
 

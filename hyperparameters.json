@@ -1,7 +1,7 @@
 {
   "batch_size": 32,
   "cpu_cores": 12,
-  "epochs": 30,
+  "epochs": 20,
   "frame_len": 6000,
   "frame_step": 3000,
   "freq_max": 4000,

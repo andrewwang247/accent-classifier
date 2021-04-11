@@ -1,20 +1,29 @@
 """
-Evaluate performance of model.
+Evaluate performance of best model.
 
 Copyright 2021. Siwei Wang.
 """
-from typing import Dict, List
-from matplotlib import pyplot as plt  # type: ignore
+from tensorflow.keras.optimizers import Nadam  # type: ignore
+from util import ACCENTS, data_shape, hyperparameters
+from model import get_bilstm
+from preprocess import load_accents
 
 
-def plot_history(history: Dict[str, List[int]], dpi: int):
-    """Plot loss and accuracy over training."""
-    for metric in ('loss', 'accuracy'):
-        plt.figure(dpi=dpi)
-        plt.plot(history[metric])
-        plt.plot(history[f'val_{metric}'])
-        plt.legend([metric, f'val_{metric}'])
-        plt.xlabel('Epoch')
-        plt.ylabel(f'{metric.capitalize()} Value')
-        plt.title(f'{metric.capitalize()} over Training')
-        plt.savefig(f'{metric}.png')
+def eval_best_bilstm(save_path: str):
+    """Evaluate the best bilstm on all data."""
+    hyp = hyperparameters()
+    train, val, test = load_accents(hyp)
+    dataset = train.concatenate(val).concatenate(test) \
+        .batch(hyp['batch_size'], drop_remainder=True) \
+        .prefetch(1)
+    model = get_bilstm(len(ACCENTS))
+    model.build(data_shape(dataset))
+    model.load_weights(save_path)
+    model.compile(optimizer=Nadam(hyp['learning_rate']),
+                  loss='sparse_categorical_crossentropy',
+                  metrics=['accuracy'])
+    model.evaluate(dataset)
+
+
+if __name__ == '__main__':
+    eval_best_bilstm('bilstm.hdf5')
