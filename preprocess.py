@@ -3,8 +3,9 @@ Load and preprocess recordings.
 
 Copyright 2021. Siwei Wang.
 """
-from typing import Dict, Tuple, Union
+from typing import Dict, List, Tuple, Union
 from os import path
+import numpy as np  # type: ignore
 import tensorflow as tf  # type: ignore
 import tensorflow_io as tfio  # type: ignore
 from util import DATA_DIR, ACCENTS
@@ -35,13 +36,32 @@ def _standardize_tensor(tens: tf.Tensor) -> tf.Tensor:
     return (tens - mean) / denom
 
 
+def _decode_wav_files(filenames: tf.data.Dataset) -> tf.data.Dataset:
+    """Read, decode, and reshape filenames dataset."""
+    return filenames.map(tf.io.read_file) \
+        .map(tf.audio.decode_wav) \
+        .map(lambda amp: tf.reshape(amp[0], [-1]))
+
+
+def dataset_class_weights(accents: List[str]) \
+        -> Dict[int, float]:
+    """Compute class weights on imbalanced accents."""
+    samples = np.empty(len(accents), dtype=int)
+    for idx, accent in enumerate(accents):
+        glb = path.join(DATA_DIR, accent, '*.wav')
+        filenames = tf.data.Dataset.list_files(glb)
+        audio = _decode_wav_files(filenames)
+        points: int = sum(aud.shape[0] for aud in audio)
+        samples[idx] = points
+    weights = np.sum(samples) / samples / len(samples)
+    return dict(enumerate(weights / np.sum(weights)))
+
+
 def _transform_files(filenames: tf.data.Dataset,
                      label: int,
                      hyp: Dict[str, Union[float, int]]) -> tf.data.Dataset:
     """Transform filenames of the same label to labelled dataset."""
-    audio = filenames.map(tf.io.read_file) \
-        .map(tf.audio.decode_wav) \
-        .map(lambda amp: tf.reshape(amp[0], [-1])) \
+    frames = _decode_wav_files(filenames) \
         .map(lambda sig: tf.signal.frame(sig, hyp['frame_len'],
                                          hyp['frame_step'])) \
         .interleave(tf.data.Dataset.from_tensor_slices,
@@ -55,7 +75,7 @@ def _transform_files(filenames: tf.data.Dataset,
                        hyp['freq_min'], hyp['freq_max'])) \
         .map(_standardize_tensor)
     const = tf.data.Dataset.from_tensors([label]).repeat()
-    return tf.data.Dataset.zip((audio, const))
+    return tf.data.Dataset.zip((frames, const))
 
 
 def load_accents(hyp: Dict[str, Union[float, int]]) \

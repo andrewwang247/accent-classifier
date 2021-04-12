@@ -6,9 +6,9 @@ Copyright 2021. Siwei Wang.
 from typing import Dict, List
 from matplotlib import pyplot as plt  # type: ignore
 from tensorflow.keras import optimizers, callbacks  # type: ignore
-from preprocess import ACCENTS, load_accents
+from preprocess import dataset_class_weights, load_accents
 from model import get_bilstm
-from util import hyperparameters, data_shape
+from util import ACCENTS, hyperparameters, data_shape
 # pylint: disable=redefined-outer-name
 
 
@@ -43,8 +43,9 @@ def train():
     checkpoint = callbacks.ModelCheckpoint('bilstm.hdf5',
                                            monitor='val_loss',
                                            save_best_only=True)
+    weights = dataset_class_weights(ACCENTS)
     hist = model.fit(train, epochs=hyp['epochs'], callbacks=[checkpoint],
-                     steps_per_epoch=hyp['train_steps'],
+                     steps_per_epoch=hyp['train_steps'], class_weight=weights,
                      validation_data=val, validation_steps=hyp['val_steps'],
                      workers=hyp['cpu_cores'], use_multiprocessing=True)
 
