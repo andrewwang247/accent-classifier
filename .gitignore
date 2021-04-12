@@ -1,5 +1,7 @@
 # Training Artifacts
 *.png
+*.hdf5
+*.pickle
 
 # Python
 *.pyc
