@@ -43,17 +43,15 @@ def _decode_wav_files(filenames: tf.data.Dataset) -> tf.data.Dataset:
         .map(lambda amp: tf.reshape(amp[0], [-1]))
 
 
-def dataset_class_weights(accents: List[str]) \
-        -> Dict[int, float]:
+def dataset_class_weights(accents: List[str]) -> Dict[int, float]:
     """Compute class weights on imbalanced accents."""
     samples = np.empty(len(accents), dtype=int)
     for idx, accent in enumerate(accents):
         glb = path.join(DATA_DIR, accent, '*.wav')
         filenames = tf.data.Dataset.list_files(glb)
         audio = _decode_wav_files(filenames)
-        points: int = sum(aud.shape[0] for aud in audio)
-        samples[idx] = points
-    weights = np.sum(samples) / samples / len(samples)
+        samples[idx] = sum(aud.shape[0] for aud in audio)
+    weights = np.sum(samples) / samples / len(accents)
     return dict(enumerate(weights / np.sum(weights)))
 
 
