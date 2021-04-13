@@ -30,9 +30,9 @@ def _file_split(accent: str, hyp: Dict[str, Union[float, int]]) \
 
 def _standardize_tensor(tens: tf.Tensor) -> tf.Tensor:
     """Rescale tensor to 0 mean and 1 std."""
-    mean = tf.math.reduce_mean(tens)
+    mean = tf.reduce_mean(tens)
     std = tf.math.reduce_std(tens)
-    denom = std if std != 0.0 else tf.constant(0.001)
+    denom = std if std != 0.0 else tf.constant(1e-4)
     return (tens - mean) / denom
 
 

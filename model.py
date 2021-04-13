@@ -15,7 +15,7 @@ def _conv_layer(filters: int, kernel_sz: int) -> layers.Conv2D:
     return layers.Conv2D(filters, kernel_sz, padding='same',
                          activation='selu',
                          kernel_initializer=LecunNormal(),
-                         kernel_regularizer=l1_l2(0.02, 0.03))
+                         kernel_regularizer=l1_l2(0.03, 0.04))
 
 
 def _lstm_layer(units: int, ret_seq: bool) -> layers.LSTM:
@@ -40,10 +40,11 @@ def _cnn_layers(in_shape: Tuple[int, ...]) -> List[layers.Layer]:
     return [layers.Reshape((*in_shape, 1), input_shape=in_shape),
             _conv_layer(32, 5),
             layers.MaxPool2D(pool_size=(1, 2)),
+            layers.Dropout(0.3),
             _conv_layer(64, 3),
             layers.MaxPool2D(pool_size=(1, 2)),
-            _conv_layer(64, 3),
-            _global_depth_pool('max')]
+            layers.Dropout(0.3),
+            _global_depth_pool('avg')]
 
 
 def _lstm_layers(num_labels: int) -> List[layers.Layer]:
@@ -52,16 +53,6 @@ def _lstm_layers(num_labels: int) -> List[layers.Layer]:
             layers.Bidirectional(_lstm_layer(36, True)),
             layers.Bidirectional(_lstm_layer(36, False)),
             layers.Dense(num_labels, activation='softmax')]
-
-
-def get_cnn(in_shape: Tuple[int, ...], num_labels: int) -> Model:
-    """Define and retrieve CNN model."""
-    return Sequential(
-        layers=_cnn_layers(in_shape) + [
-            layers.Flatten(),
-            layers.Dense(num_labels, activation='softmax')
-        ],
-        name='cnn')
 
 
 def get_bilstm(num_labels: int) -> Model:

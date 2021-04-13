@@ -28,9 +28,9 @@ def plot_history(history: Dict[str, List[int]],
 
 
 @command()
-@option('--architecture', '-a', type=str, required=True,
-        help='Choose one of "bilstm", "cnn", or "cnn_bilstm"')
-def train(architecture: str):
+@option('--cnn', '-c', is_flag=True,
+        help='Choose whether to prepend a CNN before BiLSTM.')
+def train(cnn: bool):
     """Train model on data. Evaluate test set on best models."""
     hyp = hyperparameters()
     train, val, test = [ds.repeat().shuffle(hyp['shuffle_buffer'])
@@ -40,7 +40,7 @@ def train(architecture: str):
     in_shape = data_shape(train)
 
     tracked_metrics = ['accuracy']
-    model = get_model(architecture, in_shape, len(ACCENTS))
+    model = get_model(cnn, in_shape, len(ACCENTS))
     model.build(in_shape)
     model.compile(optimizer=optimizers.Nadam(hyp['learning_rate']),
                   loss='sparse_categorical_crossentropy',
