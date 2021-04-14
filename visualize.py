@@ -23,9 +23,11 @@ def main(num: int):
         .concatenate(test) \
         .shuffle(hyp['shuffle_buffer']) \
         .take(num).prefetch(1)
+    plot_dpi = hyp['plot_dpi']
+    assert isinstance(plot_dpi, int)
     for idx, (audio, _) in enumerate(dataset):
         fpath = path.join(ARTIFACT_DIR, f'spec_{idx:02d}.png')
-        plt.figure(dpi=hyp['plot_dpi'])
+        plt.figure(dpi=plot_dpi)
         heatmap(audio)
         plt.savefig(fpath)
         plt.close()

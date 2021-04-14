@@ -51,10 +51,10 @@ def train(cnn: bool):
                   metrics=tracked_metrics)
     model.summary()
 
-    checkpoints = [callbacks.ModelCheckpoint(f'{model.name}_{met}.hdf5',
-                                             monitor=f'val_{met}',
-                                             save_best_only=True)
-                   for met in tracked_metrics + ['loss']]
+    checkpoints = [callbacks.ModelCheckpoint(
+        path.join(ARTIFACT_DIR, f'{model.name}_{met}.hdf5'),
+        monitor=f'val_{met}', save_best_only=True)
+        for met in tracked_metrics + ['loss']]
     weights = dataset_class_weights(ACCENTS)
     try:
         hist = model.fit(
@@ -78,7 +78,8 @@ def train(cnn: bool):
     finally:
         for met in tracked_metrics + ['loss']:
             print(f'Evaluating {model.name} with best {met}...')
-            model.load_weights(f'{model.name}_{met}.hdf5')
+            model.load_weights(
+                path.join(ARTIFACT_DIR, f'{model.name}_{met}.hdf5'))
             model.evaluate(test, steps=hyp['test_steps'])
 
 
