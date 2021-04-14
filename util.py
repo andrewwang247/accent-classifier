@@ -30,7 +30,7 @@ def data_shape(dataset: tf.data.Dataset) -> Tuple[int, ...]:
 
 
 def get_model(cnn: bool,
-              in_shape: Tuple[int, ...],
+              in_shape: Union[Tuple[int, ...], tf.TensorShape],
               num_labels: int) -> Model:
     """Load model corresponding to given architecture."""
     return get_cnn_bilstm(in_shape[1:], num_labels) if cnn \
