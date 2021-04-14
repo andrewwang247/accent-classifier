@@ -2,6 +2,7 @@
 *.png
 *.hdf5
 *.pickle
+spectrograms/
 
 # Python
 *.pyc

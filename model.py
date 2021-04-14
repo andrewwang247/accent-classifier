@@ -44,14 +44,14 @@ def _cnn_layers(in_shape: Tuple[int, ...]) -> List[layers.Layer]:
             _conv_layer(64, 3),
             layers.MaxPool2D(pool_size=(1, 2)),
             layers.Dropout(0.3),
-            _global_depth_pool('avg')]
+            _global_depth_pool('max')]
 
 
 def _lstm_layers(num_labels: int) -> List[layers.Layer]:
     """Get a list of layers for LSTM with final predictor."""
-    return [layers.Bidirectional(_lstm_layer(36, True)),
-            layers.Bidirectional(_lstm_layer(36, True)),
-            layers.Bidirectional(_lstm_layer(36, False)),
+    return [layers.Bidirectional(_lstm_layer(32, True)),
+            layers.Bidirectional(_lstm_layer(32, True)),
+            layers.Bidirectional(_lstm_layer(32, False)),
             layers.Dense(num_labels, activation='softmax')]
 
 
