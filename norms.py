@@ -9,7 +9,7 @@ import tensorflow as tf  # type: ignore
 from matplotlib import pyplot as plt  # type: ignore
 from click import command, option
 from preprocess import _decode_wav_files, _frame_audio
-from util import DATA_DIR, hyperparameters
+from util import DATA_DIR, ARTIFACT_DIR, hyperparameters
 # pylint: disable=no-value-for-parameter
 
 
@@ -33,7 +33,7 @@ def plot_norms(bins: int):
     plt.xlabel('Euclidean Norm')
     plt.ylabel('Frequency')
     plt.title('Histogram of Norms from Audio Frames')
-    plt.savefig('norms.png')
+    plt.savefig(path.join(ARTIFACT_DIR, 'norms.png'))
     plt.close()
 
 

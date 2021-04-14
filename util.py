@@ -13,6 +13,7 @@ from model import get_bilstm, get_cnn_bilstm
 DATA_DIR = 'recordings'
 ACCENTS = sorted(acc.name for acc in scandir(DATA_DIR))
 # ACCENTS.remove('english')
+ARTIFACT_DIR = 'bin'
 
 
 def hyperparameters() -> Dict[str, Union[float, int]]:
