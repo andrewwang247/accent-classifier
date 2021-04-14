@@ -3,13 +3,15 @@ Train model on data. Evaluate test set on best models.
 
 Copyright 2021. Siwei Wang.
 """
+from os import path
 from typing import Dict, List
 from pickle import dump
 from matplotlib import pyplot as plt  # type: ignore
 from tensorflow.keras import optimizers, callbacks  # type: ignore
 from click import command, option  # type: ignore
 from preprocess import dataset_class_weights, load_accents
-from util import ACCENTS, hyperparameters, data_shape, get_model
+from util import ACCENTS, ARTIFACT_DIR
+from util import hyperparameters, data_shape, get_model
 # pylint: disable=redefined-outer-name,no-value-for-parameter
 
 
@@ -24,7 +26,8 @@ def plot_history(history: Dict[str, List[int]],
         plt.xlabel('Epoch')
         plt.ylabel(f'{metric.capitalize()} Value')
         plt.title(f'{metric.capitalize()} over Training')
-        plt.savefig(f'{model_name}_{metric}.png')
+        plt.savefig(path.join(ARTIFACT_DIR,
+                              f'{model_name}_{metric}.png'))
         plt.close()
 
 
@@ -66,7 +69,8 @@ def train(cnn: bool):
             use_multiprocessing=True)
 
         assert hist is not None
-        with open(f'{model.name}_history.pickle', 'wb') as pick:
+        hist_path = path.join(ARTIFACT_DIR, f'{model.name}_history.pickle')
+        with open(hist_path, 'wb') as pick:
             dump(hist.history, pick)
         dpi = hyp['plot_dpi']
         assert isinstance(dpi, int)
