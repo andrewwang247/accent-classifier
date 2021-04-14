@@ -5,7 +5,7 @@ Copyright 2021. Siwei Wang.
 """
 from os import path
 from typing import Dict, List
-from pickle import dump
+from json import dump
 from matplotlib import pyplot as plt  # type: ignore
 from tensorflow.keras import optimizers, callbacks  # type: ignore
 from click import command, option  # type: ignore
@@ -33,7 +33,7 @@ def plot_history(history: Dict[str, List[int]],
 
 @command()
 @option('--cnn', '-c', is_flag=True,
-        help='Choose whether to prepend a CNN before BiLSTM.')
+        help='Set flag to train CNN-BiLSTM.')
 def train(cnn: bool):
     """Train model on data. Evaluate test set on best models."""
     hyp = hyperparameters()
@@ -69,9 +69,9 @@ def train(cnn: bool):
             use_multiprocessing=True)
 
         assert hist is not None
-        hist_path = path.join(ARTIFACT_DIR, f'{model.name}_history.pickle')
-        with open(hist_path, 'wb') as pick:
-            dump(hist.history, pick)
+        hist_path = path.join(ARTIFACT_DIR, f'{model.name}_history.json')
+        with open(hist_path, 'w') as fp_out:
+            dump(hist.history, fp_out, indent=2)
         dpi = hyp['plot_dpi']
         assert isinstance(dpi, int)
         plot_history(hist.history, tracked_metrics, model.name, dpi)
