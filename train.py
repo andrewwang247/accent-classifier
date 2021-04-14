@@ -52,21 +52,29 @@ def train(cnn: bool):
                                              save_best_only=True)
                    for met in tracked_metrics + ['loss']]
     weights = dataset_class_weights(ACCENTS)
-    hist = model.fit(train, epochs=hyp['epochs'], class_weight=weights,
-                     steps_per_epoch=hyp['train_steps'], callbacks=checkpoints,
-                     validation_data=val, validation_steps=hyp['val_steps'],
-                     workers=hyp['cpu_cores'], use_multiprocessing=True)
+    try:
+        hist = model.fit(
+            train,
+            epochs=hyp['epochs'],
+            class_weight=weights,
+            steps_per_epoch=hyp['train_steps'],
+            callbacks=checkpoints,
+            validation_data=val,
+            validation_steps=hyp['val_steps'],
+            workers=hyp['cpu_cores'],
+            use_multiprocessing=True)
 
-    assert hist is not None
-    with open(f'{model.name}_history.pickle', 'wb') as pick:
-        dump(hist.history, pick)
-    dpi = hyp['plot_dpi']
-    assert isinstance(dpi, int)
-    plot_history(hist.history, tracked_metrics, model.name, dpi)
-    for met in tracked_metrics + ['loss']:
-        print(f'Evaluating {model.name} with best {met}...')
-        model.load_weights(f'{model.name}_{met}.hdf5')
-        model.evaluate(test, steps=hyp['test_steps'])
+        assert hist is not None
+        with open(f'{model.name}_history.pickle', 'wb') as pick:
+            dump(hist.history, pick)
+        dpi = hyp['plot_dpi']
+        assert isinstance(dpi, int)
+        plot_history(hist.history, tracked_metrics, model.name, dpi)
+    finally:
+        for met in tracked_metrics + ['loss']:
+            print(f'Evaluating {model.name} with best {met}...')
+            model.load_weights(f'{model.name}_{met}.hdf5')
+            model.evaluate(test, steps=hyp['test_steps'])
 
 
 if __name__ == '__main__':
