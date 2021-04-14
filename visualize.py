@@ -32,6 +32,7 @@ def main(num: int):
         plt.figure(dpi=hyp['plot_dpi'])
         heatmap(audio)
         plt.savefig(fpath)
+        plt.close()
 
 
 if __name__ == '__main__':

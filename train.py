@@ -25,6 +25,7 @@ def plot_history(history: Dict[str, List[int]],
         plt.ylabel(f'{metric.capitalize()} Value')
         plt.title(f'{metric.capitalize()} over Training')
         plt.savefig(f'{model_name}_{metric}.png')
+        plt.close()
 
 
 @command()

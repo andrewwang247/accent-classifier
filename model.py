@@ -15,7 +15,8 @@ def _conv_layer(filters: int, kernel_sz: int) -> layers.Conv2D:
     return layers.Conv2D(filters, kernel_sz, padding='same',
                          activation='selu',
                          kernel_initializer=LecunNormal(),
-                         kernel_regularizer=l1_l2(0.03, 0.04))
+                         kernel_regularizer=l1_l2(0.02, 0.03),
+                         bias_regularizer=l1_l2(0.02, 0.03))
 
 
 def _lstm_layer(units: int, ret_seq: bool) -> layers.LSTM:

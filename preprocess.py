@@ -55,25 +55,32 @@ def dataset_class_weights(accents: List[str]) -> Dict[int, float]:
     return dict(enumerate(weights / np.sum(weights)))
 
 
+def _frame_audio(audio: tf.data.Dataset,
+                 hyp: Dict[str, Union[float, int]]) -> tf.data.Dataset:
+    """Split audio into frames."""
+    return audio.map(lambda sig: tf.signal.frame(sig, hyp['frame_len'],
+                                                 hyp['frame_step'])) \
+        .interleave(tf.data.Dataset.from_tensor_slices,
+                    cycle_length=tf.data.AUTOTUNE,
+                    num_parallel_calls=tf.data.AUTOTUNE)
+
+
 def _transform_files(filenames: tf.data.Dataset,
                      label: int,
                      hyp: Dict[str, Union[float, int]]) -> tf.data.Dataset:
     """Transform filenames of the same label to labelled dataset."""
-    frames = _decode_wav_files(filenames) \
-        .map(lambda sig: tf.signal.frame(sig, hyp['frame_len'],
-                                         hyp['frame_step'])) \
-        .interleave(tf.data.Dataset.from_tensor_slices,
-                    cycle_length=tf.data.AUTOTUNE,
-                    num_parallel_calls=tf.data.AUTOTUNE) \
-        .map(lambda sig: tfio.experimental.audio.
-             spectrogram(sig, hyp['num_fft'],
-                         hyp['spec_window'], hyp['spec_stride'])) \
+    audio = _decode_wav_files(filenames)
+    frames = _frame_audio(audio, hyp)
+    specs = frames.map(lambda sig: tfio.experimental.audio.
+                       spectrogram(sig, hyp['num_fft'],
+                                   hyp['spec_window'],
+                                   hyp['spec_stride'])) \
         .map(lambda spec: tfio.experimental.audio
              .melscale(spec, hyp['sampling_rate'], hyp['num_mels'],
                        hyp['freq_min'], hyp['freq_max'])) \
         .map(_standardize_tensor)
     const = tf.data.Dataset.from_tensors([label]).repeat()
-    return tf.data.Dataset.zip((frames, const))
+    return tf.data.Dataset.zip((specs, const))
 
 
 def load_accents(hyp: Dict[str, Union[float, int]]) \
