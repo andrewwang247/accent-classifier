@@ -1,7 +1,7 @@
 {
   "batch_size": 32,
   "cpu_cores": 6,
-  "epochs": 20,
+  "epochs": 30,
   "frame_len": 35000,
   "frame_step": 7000,
   "freq_max": 4000,
@@ -18,5 +18,5 @@
   "test_steps": 72,
   "train_steps": 578,
   "val_split": 0.1,
-  "val_steps": 72 
+  "val_steps": 72
 }
