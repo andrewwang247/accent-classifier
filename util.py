@@ -29,24 +29,8 @@ def data_shape(dataset: tf.data.Dataset) -> Tuple[int, ...]:
     return entry.shape
 
 
-def _standardize_tensor(tens: tf.Tensor) -> tf.Tensor:
-    """Rescale tensor to 0 mean and 1 std."""
-    mean = tf.reduce_mean(tens)
-    std = tf.math.reduce_std(tens)
-    denom = std if std != 0.0 else tf.constant(1e-4)
-    return (tens - mean) / denom
-
-
-def _normalize_tensor(tens: tf.Tensor) -> tf.Tensor:
-    """Rescales int16 tensor to [-1, 1]."""
-    as_float = tf.cast(tens, tf.float32)
-    assert isinstance(as_float, tf.Tensor)
-    max_int_16 = 2.0 ** 15
-    return as_float / max_int_16
-
-
 def get_model(cnn: bool,
-              in_shape: Union[Tuple[int, ...], tf.TensorShape],
+              in_shape: Tuple[int, ...],
               num_labels: int) -> Model:
     """Load model corresponding to given architecture."""
     return get_cnn_bilstm(in_shape[1:], num_labels) if cnn \
