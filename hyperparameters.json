@@ -15,8 +15,8 @@
   "spec_window": 512,
   "spec_stride": 256,
   "test_split": 0.1,
-  "test_steps": 250,
-  "train_steps": 2000,
+  "test_steps": 72,
+  "train_steps": 578,
   "val_split": 0.1,
-  "val_steps": 250
+  "val_steps": 72 
 }
