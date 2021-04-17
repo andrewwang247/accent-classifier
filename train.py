@@ -3,14 +3,15 @@ Train model on data. Evaluate test set on best models.
 
 Copyright 2021. Siwei Wang.
 """
-from os import path
+from os import path, scandir
 from typing import Dict, List
 from json import dump
+import numpy as np  # type: ignore
 from matplotlib import pyplot as plt  # type: ignore
 from tensorflow.keras import optimizers, callbacks  # type: ignore
 from click import command, option  # type: ignore
-from preprocess import dataset_class_weights, load_accents
-from util import ACCENTS, ARTIFACT_DIR
+from preprocess import load_accents
+from util import ACCENTS, ARTIFACT_DIR, DATA_DIR
 from util import hyperparameters, data_shape, get_model
 # pylint: disable=redefined-outer-name,no-value-for-parameter
 
@@ -31,6 +32,16 @@ def plot_history(history: Dict[str, List[int]],
         plt.close()
 
 
+def compute_class_weights(accents: List[str]) -> Dict[int, float]:
+    """Compute class weights for accents."""
+    counts = np.empty(len(accents), dtype=int)
+    for idx, accent in enumerate(accents):
+        wav_path = path.join(DATA_DIR, accent)
+        counts[idx] = sum(1 for _ in scandir(wav_path))
+    weights = np.sum(counts) / counts / len(accents)
+    return dict(enumerate(weights / np.sum(weights)))
+
+
 @command()
 @option('--cnn', '-c', is_flag=True,
         help='Set flag to train CNN-BiLSTM.')
@@ -41,7 +52,7 @@ def train(cnn: bool):
                         .batch(hyp['batch_size'], drop_remainder=True)
                         .prefetch(1)
                         for ds in load_accents(hyp)]
-    in_shape = data_shape(train)
+    in_shape = data_shape(val)
 
     tracked_metrics = ['accuracy']
     model = get_model(cnn, in_shape, len(ACCENTS))
@@ -55,7 +66,7 @@ def train(cnn: bool):
         path.join(ARTIFACT_DIR, f'{model.name}_{met}.hdf5'),
         monitor=f'val_{met}', save_best_only=True)
         for met in tracked_metrics + ['loss']]
-    weights = dataset_class_weights(ACCENTS)
+    weights = compute_class_weights(ACCENTS)
     try:
         hist = model.fit(
             train,
