@@ -16,7 +16,7 @@ ACCENTS = sorted(acc.name for acc in scandir(DATA_DIR))
 ARTIFACT_DIR = 'bin'
 
 
-def hyperparameters() -> Dict[str, Union[float, int]]:
+def hyperparams() -> Dict[str, Union[float, int]]:
     """Load and return hyperparameters dictionary."""
     with open('hyperparameters.json') as fin:
         hyp = load(fin)
@@ -27,6 +27,26 @@ def data_shape(dataset: tf.data.Dataset) -> Tuple[int, ...]:
     """Get shape of data from dataset."""
     entry, _ = next(iter(dataset.as_numpy_iterator()))
     return entry.shape
+
+
+def standardize(data: tf.Tensor) -> tf.Tensor:
+    """Rescale data to have mean 0 and std 1."""
+    mean = tf.reduce_mean(data)
+    std = tf.math.reduce_std(data)
+    denom = std if std != 0.0 else 1e-5
+    return (data - mean) / denom
+
+
+def compute_steps(hyp: Dict[str, Union[float, int]]) \
+        -> Tuple[int, int, int]:
+    """Compute number of steps per epoch for train, val, test."""
+    batches = hyp['total_frames'] / hyp['batch_size']
+    val = hyp['val_split']
+    test = hyp['test_split']
+    train = 1 - val - test
+    train_steps, val_steps, test_steps = [
+        round(spl * batches) for spl in (train, val, test)]
+    return train_steps, val_steps, test_steps
 
 
 def get_model(cnn: bool,

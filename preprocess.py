@@ -7,7 +7,7 @@ from typing import Dict, Tuple, Union
 from os import path
 import tensorflow as tf  # type: ignore
 import tensorflow_io as tfio  # type: ignore
-from util import DATA_DIR, ACCENTS
+from util import DATA_DIR, ACCENTS, standardize
 # pylint: disable=redefined-outer-name
 
 
@@ -44,7 +44,10 @@ def _transform_files(filenames: tf.data.Dataset,
                                    hyp['spec_stride'])) \
         .map(lambda spec: tfio.experimental.audio
              .melscale(spec, hyp['sampling_rate'], hyp['num_mels'],
-                       hyp['freq_min'], hyp['freq_max']))
+                       hyp['freq_min'], hyp['freq_max'])) \
+        .map(lambda mel: tfio.experimental.audio
+             .dbscale(mel, top_db=hyp['top_db'])) \
+        .map(standardize)
     const = tf.data.Dataset.from_tensors([label]).repeat()
     return tf.data.Dataset.zip((specs, const))
 
