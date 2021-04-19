@@ -6,13 +6,13 @@ Copyright 2021. Siwei Wang.
 from typing import List, Tuple
 import tensorflow as tf  # type: ignore
 from tensorflow.keras import Model, Sequential, layers  # type: ignore
-from tensorflow.keras.regularizers import L2, Regularizer  # type: ignore
+from tensorflow.keras.regularizers import l1_l2, Regularizer  # type: ignore
 from tensorflow.keras.initializers import LecunNormal  # type: ignore
 
 
 def _regularizer() -> Regularizer:
     """Create a regularizer."""
-    return L2(5e-3)
+    return l1_l2(5e-3, 1e-2)
 
 
 def _conv_layer(filters: int, kernel_sz: int) -> layers.Conv2D:
@@ -28,7 +28,7 @@ def _lstm_layer(units: int, ret_seq: bool) -> layers.LSTM:
     return layers.LSTM(units, return_sequences=ret_seq,
                        kernel_regularizer=_regularizer(),
                        recurrent_regularizer=_regularizer(),
-                       recurrent_dropout=0.3)
+                       recurrent_dropout=0.4)
 
 
 def _global_depth_pool(pool_op: str) -> layers.Lambda:
@@ -42,20 +42,21 @@ def _global_depth_pool(pool_op: str) -> layers.Lambda:
 def _cnn_layers(in_shape: Tuple[int, ...]) -> List[layers.Layer]:
     """Get a list of layers for CNN without final predictor."""
     return [layers.Reshape((*in_shape, 1), input_shape=in_shape),
-            _conv_layer(6, 5),
+            _conv_layer(16, 5),
             layers.MaxPool2D(pool_size=(2, 2)),
-            layers.Dropout(0.3),
-            _conv_layer(9, 3),
+            layers.Dropout(0.4),
+            _conv_layer(32, 3),
             layers.MaxPool2D(pool_size=(2, 2)),
-            layers.Dropout(0.3),
-            _conv_layer(12, 3),
-            layers.Dropout(0.3),
-            _global_depth_pool('max')]
+            layers.Dropout(0.4),
+            _conv_layer(24, 3),
+            layers.MaxPool2D(pool_size=(2, 2)),
+            layers.Dropout(0.4),
+            _global_depth_pool('avg')]
 
 
 def _lstm_layers(num_labels: int) -> List[layers.Layer]:
     """Get a list of layers for LSTM with final predictor."""
-    return [layers.Bidirectional(_lstm_layer(4, True)),
+    return [layers.Bidirectional(_lstm_layer(6, True)),
             layers.Bidirectional(_lstm_layer(6, True)),
             layers.Bidirectional(_lstm_layer(6, False)),
             layers.Dense(num_labels, activation='softmax')]
