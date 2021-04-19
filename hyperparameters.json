@@ -1,7 +1,7 @@
 {
   "batch_size": 32,
   "cpu_cores": 6,
-  "epochs": 15,
+  "epochs": 20,
   "frame_len": 35000,
   "frame_step": 5000,
   "freq_max": 4000,
@@ -11,7 +11,7 @@
   "num_mels": 128,
   "plot_dpi": 1200,
   "sampling_rate": 8000,
-  "shuffle_buffer": 1024,
+  "shuffle_buffer": 800,
   "spec_window": 512,
   "spec_stride": 256,
   "test_split": 0.1,
