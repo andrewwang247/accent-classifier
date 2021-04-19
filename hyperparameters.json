@@ -2,7 +2,7 @@
   "batch_size": 32,
   "cpu_cores": 6,
   "epochs": 20,
-  "frame_len": 35000,
+  "frame_len": 25000,
   "frame_step": 5000,
   "freq_max": 4000,
   "freq_min": 0,
@@ -16,6 +16,6 @@
   "spec_stride": 256,
   "test_split": 0.1,
   "top_db": 80,
-  "total_frames": 32256,
+  "total_frames": 34344,
   "val_split": 0.1
 }
