@@ -50,7 +50,7 @@ def compute_steps(hyp: Dict[str, Union[float, int]]) \
 
 
 def get_model(cnn: bool,
-              in_shape: Tuple[int, ...],
+              in_shape: Union[tf.TensorShape, Tuple[int, ...]],
               num_labels: int) -> Model:
     """Load model corresponding to given architecture."""
     return get_cnn_bilstm(in_shape[1:], num_labels) if cnn \

@@ -3,7 +3,7 @@ Model definitions and getters.
 
 Copyright 2021. Siwei Wang.
 """
-from typing import List, Tuple
+from typing import List, Tuple, Union
 import tensorflow as tf  # type: ignore
 from tensorflow.keras import Model, Sequential, layers  # type: ignore
 from tensorflow.keras.regularizers import l1_l2, Regularizer  # type: ignore
@@ -39,7 +39,8 @@ def _global_depth_pool(pool_op: str) -> layers.Lambda:
                          name=f'global_depth_{pool_op}_pool')
 
 
-def _cnn_layers(in_shape: Tuple[int, ...]) -> List[layers.Layer]:
+def _cnn_layers(in_shape: Union[tf.TensorShape, Tuple[int, ...]]) \
+        -> List[layers.Layer]:
     """Get a list of layers for CNN without final predictor."""
     return [layers.Reshape((*in_shape, 1), input_shape=in_shape),
             _conv_layer(32, 5),
@@ -68,7 +69,7 @@ def get_bilstm(num_labels: int) -> Model:
         name='bilstm')
 
 
-def get_cnn_bilstm(in_shape: Tuple[int, ...],
+def get_cnn_bilstm(in_shape: Union[tf.TensorShape, Tuple[int, ...]],
                    num_labels: int) -> Model:
     """Define and retrive CNN_BiLSTM model."""
     return Sequential(
