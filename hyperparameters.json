@@ -16,6 +16,6 @@
   "spec_stride": 256,
   "test_split": 0.1,
   "top_db": 80,
-  "total_frames": 34344,
+  "total_frames": 34185,
   "val_split": 0.1
 }

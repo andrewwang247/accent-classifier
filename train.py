@@ -66,7 +66,7 @@ def train(cnn: bool):
     tracked_metrics = ['accuracy']
     model = get_model(cnn, in_shape, len(ACCENTS))
     model.build(in_shape)
-    model.compile(optimizer=optimizers.Nadam(hyp['learning_rate']),
+    model.compile(optimizer=optimizers.Adam(hyp['learning_rate']),
                   loss='sparse_categorical_crossentropy',
                   metrics=tracked_metrics)
     model.summary()
