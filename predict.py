@@ -4,7 +4,7 @@ Make soft ensemble predictions using best model.
 Copyright 2021. Siwei Wang.
 """
 from os import path
-from typing import Dict, Union
+from typing import Dict, Union, Tuple
 import tensorflow as tf  # type: ignore
 from matplotlib import pyplot as plt  # type: ignore
 from click import command, option, Path
@@ -23,7 +23,7 @@ def preproc_file(audio: str,
                                 dtype=tf.float32)
 
 
-def load_best_model(cnn: bool, in_shape: tf.TensorShape) \
+def load_best_model(cnn: bool, in_shape: Tuple[int, ...]) \
         -> tf.keras.Model:
     """Load best BiLSTM or CNN-BiLSTM model."""
     model = get_model(cnn, in_shape, len(ACCENTS))
