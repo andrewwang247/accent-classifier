@@ -6,13 +6,13 @@ Copyright 2021. Siwei Wang.
 from typing import List, Tuple
 import tensorflow as tf  # type: ignore
 from tensorflow.keras import Model, Sequential, layers  # type: ignore
-from tensorflow.keras.regularizers import l1_l2, Regularizer  # type: ignore
+from tensorflow.keras.regularizers import l2, Regularizer  # type: ignore
 from tensorflow.keras.initializers import LecunNormal  # type: ignore
 
 
 def _regularizer() -> Regularizer:
     """Create a regularizer."""
-    return l1_l2(5e-3, 1e-2)
+    return l2(5e-2)
 
 
 def _conv_layer(filters: int, kernel_sz: int) -> layers.Conv2D:
@@ -42,12 +42,15 @@ def _global_depth_pool(pool_op: str) -> layers.Lambda:
 def _cnn_layers(in_shape: Tuple[int, ...]) \
         -> List[layers.Layer]:
     """Get a list of layers for CNN without final predictor."""
-    num_max_pools = 2  # adjust this number as needed.
+    num_max_pools = 3  # adjust this number as needed.
     out_shape = (in_shape[0] // 2**num_max_pools, -1)
     cnn_lays = [layers.Reshape((*in_shape, 1),
                                input_shape=in_shape,
                                name='create_channel'),
                 _conv_layer(16, 5),
+                layers.MaxPool2D(pool_size=(2, 2)),
+                layers.Dropout(0.3),
+                _conv_layer(32, 4),
                 layers.MaxPool2D(pool_size=(2, 2)),
                 layers.Dropout(0.3),
                 _conv_layer(32, 3),
@@ -64,9 +67,9 @@ def _cnn_layers(in_shape: Tuple[int, ...]) \
 
 def _lstm_layers(num_labels: int) -> List[layers.Layer]:
     """Get a list of layers for LSTM with final predictor."""
-    return [layers.Bidirectional(_lstm_layer(48, True)),
-            layers.Bidirectional(_lstm_layer(48, True)),
-            layers.Bidirectional(_lstm_layer(48, False)),
+    return [layers.Bidirectional(_lstm_layer(24, True)),
+            layers.Bidirectional(_lstm_layer(18, True)),
+            layers.Bidirectional(_lstm_layer(12, False)),
             layers.Dense(num_labels, activation='softmax')]
 
 
