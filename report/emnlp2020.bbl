@@ -1,0 +1,48 @@
+\begin{thebibliography}{7}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+
+\bibitem[{Ahmed et~al.(2019)Ahmed, Tangri, Panda, Ramani, and Nevronas}]{ahmed}
+A.~Ahmed, P.~Tangri, A.~Panda, D.~Ramani, and S.~Nevronas. 2019.
+\newblock \href {https://arxiv.org/pdf/1910.06697.pdf} {Vfnet: A convolutional
+  architecture for accent classification}.
+\newblock \emph{arXiv}, 1910.06697.
+
+\bibitem[{Chen et~al.(2011)Chen, Lee, and Neidert}]{chen}
+P.~Chen, J.~Lee, and J.~Neidert. 2011.
+\newblock \href
+  {http://cs229.stanford.edu/proj2011/ChenLeeNeidert-ForeignAccentClassification.pdf}
+  {Foreign accent classification}.
+\newblock \emph{Stanford CS229}.
+
+\bibitem[{Olah(2015)}]{olah}
+C.~Olah. 2015.
+\newblock \href {https://colah.github.io/posts/2015-08-Understanding-LSTMs/}
+  {Understanding lstm networks}.
+\newblock \emph{colah's blog}.
+
+\bibitem[{Sheng and Edmund(2017)}]{sheng}
+L.~Sheng and M.~Edmund. 2017.
+\newblock \href {http://cs229.stanford.edu/proj2017/final-reports/5244230.pdf}
+  {Deep learning approach to accent classification}.
+\newblock \emph{Stanford CS229}.
+
+\bibitem[{Shih(2017)}]{shih}
+C.~Shih. 2017.
+\newblock \href {http://cs229.stanford.edu/proj2017/final-reports/5238301.pdf}
+  {Speech accent classification}.
+\newblock \emph{Stanford CS229}.
+
+\bibitem[{Sohail(2019)}]{attention}
+S.~Sohail. 2019.
+\newblock \href
+  {https://shairozsohail.medium.com/a-survey-of-visual-attention-mechanisms-in-deep-learning-1043eb25f343}
+  {A survey of visual attention mechanisms in deep learning}.
+\newblock \emph{Medium}.
+
+\bibitem[{Wang(2021)}]{github}
+S.~Wang. 2021.
+\newblock \href {https://github.com/siweiwang24/accent-classifier.git} {Accent
+  classifier}.
+\newblock \emph{Github}.
+
+\end{thebibliography}
