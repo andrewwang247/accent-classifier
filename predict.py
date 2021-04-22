@@ -45,6 +45,17 @@ def plot_scores(aggregate: tf.Tensor, model_name: str):
     plt.close()
 
 
+def make_prediction(model: tf.keras.Model,
+                    specs: tf.Tensor,
+                    plot: bool = False) -> int:
+    """Make accent prediction and if flag is set, plot scores."""
+    scores = model.predict(specs)
+    aggregate = tf.reduce_sum(scores, axis=0)
+    if plot:
+        plot_scores(aggregate, model.name)
+    return tf.argmax(aggregate)
+
+
 @command()
 @option('--audio', '-a', type=Path(exists=True,
                                    file_okay=True,
@@ -59,11 +70,9 @@ def predict(audio: str, cnn: bool):
     plt.rcParams['figure.dpi'] = hyp['plot_dpi']
     specs = preproc_file(audio, hyp)
     model = load_best_model(cnn, specs.shape)
-    scores = model.predict(specs)
-    aggregate = tf.reduce_sum(scores, axis=0)
-    prediction = ACCENTS[tf.argmax(aggregate)]
+    pred_idx = make_prediction(model, specs)
+    prediction = ACCENTS[pred_idx]
     print('Predicted accent:', prediction)
-    plot_scores(aggregate, model.name)
 
 
 if __name__ == '__main__':
