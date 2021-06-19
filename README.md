@@ -1,0 +1,6 @@
+![](paper-imgs/accent-1.png)
+![](paper-imgs/accent-2.png)
+![](paper-imgs/accent-3.png)
+![](paper-imgs/accent-4.png)
+![](paper-imgs/accent-5.png)
+![](paper-imgs/accent-6.png)
